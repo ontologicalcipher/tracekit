@@ -72,6 +72,20 @@ def main():
         action="store_true",
         help="Output metadata as JSON",
     )
+    report_parser = sub.add_parser(
+        "report",
+        help="Generate a combined domain and web report",
+    )
+    report_parser.add_argument(
+        "target",
+        help="Domain name or website URL",
+    )
+    report_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Output report as JSON",
+    )
+
     sub.add_parser("username", help="Check a public username")
     sub.add_parser("metadata", help="Inspect local file metadata")
 
@@ -114,6 +128,43 @@ def main():
             print(json.dumps(result, indent=2, ensure_ascii=False))
         else:
             print_result(result)
+
+        return
+
+    if args.command == "report":
+        target = args.target
+
+        domain_target = target
+        if "://" in target:
+            from urllib.parse import urlparse
+            domain_target = urlparse(target).hostname or target
+
+        domain_result = resolve(domain_target)
+
+        web_target = target
+        if "://" not in target:
+            web_target = f"https://{target}"
+
+        web_result = inspect(web_target)
+
+        report = {
+            "target": target,
+            "domain": domain_result,
+            "web": web_result,
+        }
+
+        if args.json:
+            print(json.dumps(report, indent=2, ensure_ascii=False))
+        else:
+            print()
+            print("[TRACEKIT REPORT]")
+            print(f"Target: {target}")
+            print()
+            print("[DOMAIN]")
+            print_result(domain_result)
+            print()
+            print("[WEB]")
+            print_web_result(web_result)
 
         return
 
