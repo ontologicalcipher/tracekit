@@ -6,6 +6,7 @@ from tracekit.domain import resolve, print_result
 from tracekit.web import inspect, print_result as print_web_result
 from tracekit.youtube import inspect as youtube_inspect, print_result as print_youtube_result, download as youtube_download
 from tracekit.report import build_report
+from tracekit.username import check_username, print_result as print_username_result
 
 
 def main():
@@ -87,7 +88,19 @@ def main():
         help="Output report as JSON",
     )
 
-    sub.add_parser("username", help="Check a public username")
+    username_parser = sub.add_parser(
+        "username",
+        help="Check a public username",
+    )
+    username_parser.add_argument(
+        "username",
+        help="Public username to check",
+    )
+    username_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Output result as JSON",
+    )
     sub.add_parser("metadata", help="Inspect local file metadata")
 
     args = parser.parse_args()
@@ -99,6 +112,16 @@ def main():
             print(json.dumps(result, indent=2, ensure_ascii=False))
         else:
             print_web_result(result)
+
+        return
+
+    if args.command == "username":
+        result = check_username(args.username)
+
+        if args.json:
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+        else:
+            print_username_result(result)
 
         return
 
