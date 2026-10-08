@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TraceKit</title>
+</head>
+<body>
+
+    <h1>TraceKit</h1>
+    <p>Local public-data reconnaissance toolkit</p>
+
+    <form id="lookup-form">
+        <input
+            id="target"
+            type="text"
+            placeholder="example.com"
+            required
+        >
+
+        <select id="module">
+            <option value="domain">Domain</option>
+            <option value="web">Website</option>
+            <option value="youtube">YouTube</option>
+            <option value="username">Username</option>
+        </select>
+
+        <button type="submit">Run</button>
+    </form>
+
+    <pre id="output">Ready.</pre>
+
+    <script>
+        const form = document.getElementById("lookup-form");
+        const target = document.getElementById("target");
+        const module = document.getElementById("module");
+        const output = document.getElementById("output");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            output.textContent = "Running...";
+
+            try {
+                const response = await fetch(
+                    `/api/${module.value}?target=${encodeURIComponent(target.value)}`
+                );
+
+                const data = await response.json();
+
+                output.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error}`;
+            }
+        });
+    </script>
+
+</body>
+</html>

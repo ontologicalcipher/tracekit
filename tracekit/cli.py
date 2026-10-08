@@ -34,8 +34,9 @@ def main():
     domain_parser.add_argument(
         "--json",
         action="store_true",
-        help="Output result as JSON",
+        help="Output results as JSON",
     )
+
 
     web_parser = sub.add_parser(
         "web",
@@ -48,8 +49,9 @@ def main():
     web_parser.add_argument(
         "--json",
         action="store_true",
-        help="Output result as JSON",
+        help="Output results as JSON",
     )
+
 
     youtube_parser = sub.add_parser(
         "youtube",
