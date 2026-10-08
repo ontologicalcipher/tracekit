@@ -28,6 +28,11 @@
         <button type="submit">Run</button>
     </form>
 
+    <div id="download-buttons" style="display:none; margin-top:15px;">
+        <button type="button" id="mp3-button">Download MP3</button>
+        <button type="button" id="mp4-button">Download MP4</button>
+    </div>
+
     <pre id="output">Ready.</pre>
 
     <script>
@@ -35,6 +40,44 @@
         const target = document.getElementById("target");
         const module = document.getElementById("module");
         const output = document.getElementById("output");
+
+        const downloadButtons = document.getElementById("download-buttons");
+        const mp3Button = document.getElementById("mp3-button");
+        const mp4Button = document.getElementById("mp4-button");
+
+        function updateDownloadButtons() {
+            downloadButtons.style.display =
+                module.value === "youtube" ? "block" : "none";
+        }
+
+        module.addEventListener("change", updateDownloadButtons);
+        updateDownloadButtons();
+
+        async function downloadYouTube(mode) {
+            const url = target.value.trim();
+
+            if (!url) {
+                output.textContent = "Enter a YouTube URL first.";
+                return;
+            }
+
+            output.textContent = `Downloading ${mode.toUpperCase()}...`;
+
+            try {
+                const response = await fetch(
+                    `/api/youtube/download?target=${encodeURIComponent(url)}&mode=${mode}`
+                );
+
+                const data = await response.json();
+
+                output.textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                output.textContent = `Error: ${error}`;
+            }
+        }
+
+        mp3Button.addEventListener("click", () => downloadYouTube("mp3"));
+        mp4Button.addEventListener("click", () => downloadYouTube("mp4"));
 
         form.addEventListener("submit", async (event) => {
             event.preventDefault();
