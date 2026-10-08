@@ -9,6 +9,38 @@ PLATFORMS = {
 }
 
 
+def detect_status(platform, response):
+    if response.status_code == 404:
+        return False
+
+    if response.status_code != 200:
+        return None
+
+    text = response.text.lower()
+
+    if platform == "github":
+        return True
+
+    if platform == "reddit":
+        if "this account has been suspended" in text:
+            return False
+        if "page not found" in text:
+            return False
+        return True
+
+    if platform == "x":
+        if "doesn't exist" in text or "account suspended" in text:
+            return False
+        return True
+
+    if platform == "instagram":
+        if "page isn't available" in text:
+            return False
+        return True
+
+    return None
+
+
 def check_username(username):
     results = {}
 
@@ -30,7 +62,7 @@ def check_username(username):
             results[platform] = {
                 "url": url,
                 "status_code": response.status_code,
-                "exists": response.status_code == 200,
+                "exists": detect_status(platform, response),
             }
 
         except requests.RequestException as error:
@@ -54,10 +86,11 @@ def print_result(result):
 
     for platform, data in result["results"].items():
         status = data.get("status_code", "ERROR")
+        exists = data.get("exists")
 
-        if data.get("exists") is True:
+        if exists is True:
             state = "FOUND"
-        elif data.get("exists") is False:
+        elif exists is False:
             state = "NOT FOUND"
         else:
             state = "UNKNOWN"
