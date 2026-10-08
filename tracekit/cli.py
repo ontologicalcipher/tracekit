@@ -5,6 +5,7 @@ from tracekit import __version__
 from tracekit.domain import resolve, print_result
 from tracekit.web import inspect, print_result as print_web_result
 from tracekit.youtube import inspect as youtube_inspect, print_result as print_youtube_result, download as youtube_download
+from tracekit.report import build_report
 
 
 def main():
@@ -147,11 +148,11 @@ def main():
 
         web_result = inspect(web_target)
 
-        report = {
-            "target": target,
-            "domain": domain_result,
-            "web": web_result,
-        }
+        report = build_report(
+            target,
+            domain_result,
+            web_result,
+        )
 
         if args.json:
             print(json.dumps(report, indent=2, ensure_ascii=False))
