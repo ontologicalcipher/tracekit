@@ -1,4 +1,5 @@
 import argparse
+import json
 
 from tracekit import __version__
 from tracekit.domain import resolve, print_result
@@ -56,6 +57,11 @@ def main():
         action="store_true",
         help="Download video as MP4",
     )
+    youtube_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Output metadata as JSON",
+    )
     sub.add_parser("username", help="Check a public username")
     sub.add_parser("metadata", help="Inspect local file metadata")
 
@@ -78,7 +84,12 @@ def main():
             return
 
         result = youtube_inspect(args.target)
-        print_youtube_result(result)
+
+        if args.json:
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+        else:
+            print_youtube_result(result)
+
         return
 
     if args.command == "domain":
