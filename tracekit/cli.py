@@ -29,6 +29,11 @@ def main():
         "target",
         help="Domain name, e.g. example.com",
     )
+    domain_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Output result as JSON",
+    )
 
     web_parser = sub.add_parser(
         "web",
@@ -37,6 +42,11 @@ def main():
     web_parser.add_argument(
         "target",
         help="Website URL, e.g. https://example.com",
+    )
+    web_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Output result as JSON",
     )
 
     youtube_parser = sub.add_parser(
@@ -69,7 +79,12 @@ def main():
 
     if args.command == "web":
         result = inspect(args.target)
-        print_web_result(result)
+
+        if args.json:
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+        else:
+            print_web_result(result)
+
         return
 
     if args.command == "youtube":
@@ -94,7 +109,12 @@ def main():
 
     if args.command == "domain":
         result = resolve(args.target)
-        print_result(result)
+
+        if args.json:
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+        else:
+            print_result(result)
+
         return
 
     if args.command:
